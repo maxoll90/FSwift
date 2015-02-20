@@ -59,72 +59,72 @@ private var _root = ""
 
 public class Service: ServiceUtil {
     
-    // MARK: Global set up
+    let root:String
     
-    public class var root:String {
-        get {
-        return _root
-        }
-        set(value) {
-            _root = value
-        }
+    public init(root:String) {
+        self.root = root
     }
     
     // MARK: GET
     
-    public class func getObjectWithId<G:GETable>(id:String, type:G.Type, var headers: Dictionary<String, AnyObject>) -> Future<G> {
+    public func getObjectWithId<G:GETable>(id:String, type:G.Type, var headers: Dictionary<String, AnyObject>) -> Future<G> {
         let url = root / G.resourceNamePlural / id
-        return requestObject(type, url: url, requestMethod: RequestMethod.GET, coder:nil , headers: headers)
+        return Service.requestObject(type, url: url, requestMethod: RequestMethod.GET, coder:nil , headers: headers)
     }
     
-    public class func getObject<G:GETable, R:RESTfull>(type:G.Type, from:R, var headers: Dictionary<String, AnyObject>) -> Future<G> {
+    public func getObject<G:GETable, R:RESTfull>(type:G.Type, from:R, var headers: Dictionary<String, AnyObject>) -> Future<G> {
         let url = root / R.resourceNamePlural / from.id / G.resourceName
-        return requestObject(type, url: url, requestMethod: RequestMethod.GET, coder:nil , headers: headers)
+        return Service.requestObject(type, url: url, requestMethod: RequestMethod.GET, coder:nil , headers: headers)
     }
     
     // MARK: GET Multiple
     
-    public class func getObjectsWithIds<G:GETable>(ids:[String], type:G.Type, var headers: Dictionary<String, AnyObject>) -> Future<[G]> {
+    public func getObjectsWithIds<G:GETable>(ids:[String], type:G.Type, var headers: Dictionary<String, AnyObject>) -> Future<[G]> {
         let url = root / G.resourceNamePlural / "[" + ",".join(ids) + "]"
-        return requestObjects(type, url: url, requestMethod: RequestMethod.GET, coder:nil , headers: headers)
+        return Service.requestObjects(type, url: url, requestMethod: RequestMethod.GET, coder:nil , headers: headers)
     }
     
-    public class func getObjects<G:GETable, R:RESTfull>(type:G.Type, from:R, var headers: Dictionary<String, AnyObject>) -> Future<[G]> {
+    public func getObjects<G:GETable, R:RESTfull>(type:G.Type, from:R, var headers: Dictionary<String, AnyObject>) -> Future<[G]> {
         let url = root / R.resourceNamePlural / from.id / G.resourceNamePlural
-        return requestObjects(type, url: url, requestMethod: RequestMethod.GET, coder:nil , headers: headers)
+        return Service.requestObjects(type, url: url, requestMethod: RequestMethod.GET, coder:nil , headers: headers)
+    }
+    
+    public func getAllObjects<G:GETable>(type:G.Type, var headers: Dictionary<String, AnyObject>) -> Future<[G]> {
+        let url = root / G.resourceNamePlural
+        return Service.requestObjects(type, url: url, requestMethod: RequestMethod.GET, coder:nil , headers: headers)
     }
     
     // MARK: POST
     
-    public class func postObject<P:POSTable>(object:P, var headers: Dictionary<String, AnyObject>) -> Future<P> {
+    public func postObject<P:POSTable>(object:P, var headers: Dictionary<String, AnyObject>) -> Future<P> {
         let url = root / P.resourceName
-        return requestObject(P.self, url: url, requestMethod: RequestMethod.POST, coder: object.postCoder(Coder()), headers: headers)
+        return Service.requestObject(P.self, url: url, requestMethod: RequestMethod.POST, coder: object.postCoder(Coder()), headers: headers)
     }
     
-    public class func postObject<P:POSTable, R:RESTfull>(object:P, to:R, var headers: Dictionary<String, AnyObject>) -> Future<P> {
+    public func postObject<P:POSTable, R:RESTfull>(object:P, to:R, var headers: Dictionary<String, AnyObject>) -> Future<P> {
         let url = root / R.resourceNamePlural / to.id / P.resourceNamePlural
-        return requestObject(P.self, url: url, requestMethod: RequestMethod.POST, coder: object.postCoder(Coder()), headers: headers)
+        return Service.requestObject(P.self, url: url, requestMethod: RequestMethod.POST, coder: object.postCoder(Coder()), headers: headers)
     }
     
-    public class func postObjectWithoutResponse<P:POSTable>(object:P, var headers: Dictionary<String, AnyObject>) -> Future<Successful> {
+    public func postObjectWithoutResponse<P:POSTable>(object:P, var headers: Dictionary<String, AnyObject>) -> Future<Successful> {
         let url = root / P.resourceName
-        return requestDecoder(url, requestMethod: RequestMethod.POST, coder: object.postCoder(Coder()), headers: headers).map { decoder in
+        return Service.requestDecoder(url, requestMethod: RequestMethod.POST, coder: object.postCoder(Coder()), headers: headers).map { decoder in
             return Try.Success(Successful())
         }
     }
     
     // MARK: UPDATE
     
-    public class func updateObject<U:UPDATEable>(object:U, var headers: Dictionary<String, AnyObject>) -> Future<U> {
+    public func updateObject<U:UPDATEable>(object:U, var headers: Dictionary<String, AnyObject>) -> Future<U> {
         let url = root / U.resourceNamePlural / object.id
-        return requestObject(U.self, url: url, requestMethod: RequestMethod.PUT, coder: object.updateCoder(Coder()), headers: headers)
+        return Service.requestObject(U.self, url: url, requestMethod: RequestMethod.PUT, coder: object.updateCoder(Coder()), headers: headers)
     }
     
     // MARK: DELETE
     
-    public class func deleteObjectWithId<D:DELETEable>(id:String, type:D.Type, var headers: Dictionary<String, AnyObject>) -> Future<Successful> {
+    public func deleteObjectWithId<D:DELETEable>(id:String, type:D.Type, var headers: Dictionary<String, AnyObject>) -> Future<Successful> {
         let url = root / D.resourceNamePlural / id
-        return requestDecoder(url, requestMethod: RequestMethod.DELETE, coder:nil, headers: headers).map { decoder in
+        return Service.requestDecoder(url, requestMethod: RequestMethod.DELETE, coder:nil, headers: headers).map { decoder in
             return Try.Success(Successful())
         }
     }
