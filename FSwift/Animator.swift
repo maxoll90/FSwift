@@ -16,6 +16,7 @@ public enum QueueItem {
     case Also(block:(duration:CFTimeInterval)->())
     case AlsoQueue(Queue)
     case StepBack(duration:CFTimeInterval)
+    case Pause(duration:CFTimeInterval)
 }
 
 public class Queue {
@@ -59,6 +60,11 @@ public class Queue {
     
     public func stepback(duration:CFTimeInterval) -> Queue {
         _items.append(QueueItem.StepBack(duration: duration))
+        return self
+    }
+    
+    public func pause(duration:CFTimeInterval) -> Queue {
+        _items.append(QueueItem.Pause(duration: duration))
         return self
     }
     
@@ -110,6 +116,9 @@ public class Queue {
         case .StepBack(duration: let duration):
             currentTime -= duration
             
+        case .Pause(duration: let t):
+            currentTime = currentTime + currentDuration
+            currentDuration = t
         }
         
     }
@@ -129,6 +138,9 @@ public class Queue {
                 
             case .StepBack(duration: let duration):
                 cumulativeDuration -= duration
+                
+            case .Pause(duration: let t):
+                cumulativeDuration -= t
                 
             case .Also(block: _), .Then(block: _), .AlsoQueue(_), .Now(block: _):
                 Void()
